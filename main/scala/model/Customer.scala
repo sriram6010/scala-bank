@@ -12,7 +12,7 @@ import io.circe.syntax._
 import java.util.UUID
 
 //to create a customer Object to DB
-case class Customer(customer_id: String = UUID.randomUUID().toString, name: String, email: String, address: String) {
+case class Customer(customer_id: Integer = 0, name: String, email: String, address: String) {
 
   private var accounts = List[Account]()
 
@@ -29,7 +29,7 @@ object Customer {
   def apply(resultSet: ResultSetWrapper): Customer = {
     val row: List[Map[String, Object]] = resultSet.getResult.head
 
-    val customer_id = row(0)("customer_id").toString
+    val customer_id = row(0)("customer_id").asInstanceOf[Integer]
     val name = row(1)("name").toString
     val email = row(2)("email").toString
     val address = row(3)("address").toString
@@ -42,7 +42,7 @@ object Customer {
   implicit val customerEncoder: Encoder[Customer] = new Encoder[Customer] {
     final def apply(customer: Customer): Json = Json.obj(
       "name" -> Json.fromString(customer.name),
-      "customer_id" -> Json.fromString(customer.customer_id),
+      "customer_id" -> Json.fromInt(customer.customer_id),
       "email" -> Json.fromString(customer.email),
       "address" -> Json.fromString(customer.address),
       "accounts" -> Json.fromValues(customer.accounts.map(account => account.asJson))

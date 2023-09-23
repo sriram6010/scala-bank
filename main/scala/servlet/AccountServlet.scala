@@ -10,7 +10,7 @@ import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 class AccountServlet extends HttpServlet{
 
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
-    val customer_id = req.getParameter("customer_id")
+    val customer_id = req.getParameter("customer_id").toInt
     val account_no = AccountOperations.createAccount(customer_id)
 
     resp.setStatus(HttpServletResponse.SC_OK)
@@ -31,6 +31,12 @@ class AccountServlet extends HttpServlet{
     out.write(account.asJson.noSpaces)
 
     out.close()
+  }
+
+  override def doPut(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
+    val account_no = req.getParameter("account_no")
+    val creditAmount = req.getParameter("amount").toInt
+    AccountOperations.creditAmount(account_no,creditAmount)
   }
 
 }

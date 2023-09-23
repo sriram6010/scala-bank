@@ -25,4 +25,42 @@ class ResultSetWrapper {
   }
 
   def getResult: List[List[Map[String, Object]]] = result
+  
+  def getReturnIntegerValue(column_name:String) : Integer = {
+    getResult.headOption.flatMap { row =>
+      row.headOption.flatMap(_.get(column_name).collect{case value:Int => value})
+    }.getOrElse(-1)
+  }
+
+  def getReturnStringValue(column_name: String): String = {
+    getResult.headOption.flatMap { row =>
+      row.headOption.flatMap(_.get(column_name).collect { case value: String => value })
+    }.getOrElse("")
+  }
+
+  def getReturnStringValueOption(column_name: String): Option[String] = {
+    getResult.headOption.flatMap { row =>
+      row.headOption.flatMap {
+        case map: Map[String, Any] =>
+          map.get(column_name) collect {
+            case value: String => value
+          }
+        case null => None
+      }
+    }
+  }
+
+  def extractStringValue(row: List[Map[String, Object]], key: String): String = {
+    row.find(map => map.contains(key) && map(key) != null) match {
+      case Some(m) => m(key).toString
+      case None => ""
+    }
+  }
+
+  def extractIntValue(row: List[Map[String, Object]], key: String): Int = {
+    row.find(map => map.contains(key)) match
+      case Some(m) => m(key).asInstanceOf[Int]
+      case None => 0
+  }
+
 }
