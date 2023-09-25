@@ -4,15 +4,18 @@ import org.scala.action.{AccountOperations, CustomerOperations}
 import org.scala.model.Customer
 import io.circe.syntax.*
 import org.scala.bank.upi.{HDFCUPI, TransactionFailureException, TransactionRemarks, TransactionStatus, TransactionType, UPIManager, UPITransaction}
-
+import io.circe._
 
 object Main {
   def main(args: Array[String]): Unit = {
     println("Hello world!")
+    val history = UPIManager.transactionHistory("sriram@hdfc");
 
-    println(UPIManager.transactionHistory("sriram@hdfc"))
+    println(history.asJson)
     //println(CustomerOperations.getCustomer(22).asJson.noSpaces)
-   //val transaction = UPITransaction("sriram@hdfc","ram@hdfc",2)
+   /*val transaction = UPITransaction("sriram@hdfc","ram@hdfc",2)
+    val tran = UPIManager.send(transaction,1234)
+    println(tran.asJson)*/
 
    //// val manager = UPIManager.register("accnt@hdfc","accc",1234)
 

@@ -1,6 +1,7 @@
 package org.scala.bank
 package upi
 
+import io.circe.{Encoder, Json}
 import org.scala.db.{PgExecutor, ResultSetWrapper}
 
 case class UPITransaction(from:String, to:String,
@@ -57,16 +58,38 @@ object UPITransaction{
         val to = resultSetWrapper.extractStringValue(row,"to")
         val trans_type = resultSetWrapper.extractIntValue(row,"type")
         val amount = resultSetWrapper.extractIntValue(row,"amount")
+        val status = resultSetWrapper.extractIntValue(row,"status")
+
         val remarks = resultSetWrapper.extractStringValue(row,"remarks")
         val ref_id = resultSetWrapper.extractStringValue(row,"reference_id")
 
         val transaction = UPITransaction(from,to, amount)
         transaction.transaction_id = transaction_id
         transaction.remarks = remarks
-        //transaction.reference_id = ref_id.toInt
+        transaction.reference_id = ref_id.toInt
         transaction.trans_type = trans_type
+        transaction.status = status
         transaction
     }
+  }
+
+  implicit val accountEncoder: Encoder[UPITransaction] = new Encoder[UPITransaction] {
+    final def apply(transation: UPITransaction): Json = Json.obj(
+      "transaction_id"-> Json.fromInt(transation.transaction_id),
+      "sender" -> Json.fromString(transation.from),
+      "receiver" -> Json.fromString(transation.to),
+      "amount" -> Json.fromInt(transation.amount),
+      "transaction_type" -> Json.fromString(transation.trans_type match {
+      case TransactionType.CREDIT => "Credit"
+      case TransactionType.DEBIT => "Debit"
+    }),
+      "transaction_status" -> Json.fromString(transation.status match
+        case TransactionStatus.STARTED => "Started"
+        case TransactionStatus.COMPLETED => "Completed"
+        case TransactionStatus.FAILED => "Failed"),
+      "remarks" -> Json.fromString(transation.remarks),
+      "reference_id" -> Json.fromInt(transation.reference_id)
+    )
   }
 }
 

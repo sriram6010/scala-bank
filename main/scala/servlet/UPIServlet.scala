@@ -49,4 +49,15 @@ class UPIServlet extends HttpServlet{
     out.close()
   }
 
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
+    val upi = req.getParameter("upi")
+    val result = UPIManager.transactionHistory(upi)
+
+    resp.setStatus(HttpServletResponse.SC_OK)
+    val out = resp.getWriter
+    out.write(result.asJson.toString)
+    out.close()
+
+  }
+
 }

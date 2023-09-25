@@ -60,5 +60,5 @@ private object RegisterSQL{
   val register = "insert into upidetail(upi_id,pin,account_no) values (?,?,?) returning upi_id;"
   val exists = "select upi_id from upidetail where upi_id = ?;"
   val getUPI = "select upi_id from upidetail where account_no = ?;"
-  val history = "select * from transactionhistory where \"from\" = ? or \"to\" = ?;"
+  val history = "select * from transactionhistory where (\"from\" = ? and type = 1) or (\"to\" = ? and type = 0);"
 }
